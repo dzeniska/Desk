@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+        <item android:title="@string/add_cat_1">
+            <menu>
+                <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/id_my_adds"
+                    android:title="@string/add_my_adds">
+
+                </item>
+                <item
+                    android:id="@+id/id_my_car"
+                    android:title="@string/add_my_car">
+
+                </item>
+                <item
+                    android:id="@+id/id_my_pc"
+                    android:title="@string/add_my_pc">
+
+                </item>
+                <item
+                    android:id="@+id/id_my_smartphones"
+                    android:title="@string/add_my_smartphones">
+
+                </item>
+                <item
+                    android:id="@+id/id_my_dm"
+                    android:title="@string/add_my_dm">
+
+                </item>
+                </group>
+            </menu>
+        </item>
+        <item android:title="@string/add_cat_2">
+            <menu>
+                <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/id_sign_up"
+                    android:title="@string/ac_sign_up">
+                </item>
+                <item
+                    android:id="@+id/id_sign_in"
+                    android:title="@string/ac_sign_in">
+                </item>
+                <item
+                    android:id="@+id/id_sign_out"
+                    android:title="@string/ac_sign_out">
+
+                </item>
+                </group>
+            </menu>
+        </item>
+
+</menu>

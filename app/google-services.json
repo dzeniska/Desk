@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "902360269968",
+    "project_id": "tabladkotlin-7c144",
+    "storage_bucket": "tabladkotlin-7c144.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:902360269968:android:15534497a9f8e06e2cc415",
+        "android_client_info": {
+          "package_name": "com.dzenis_ska.desk"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "902360269968-361f6mth4udq0v0j5p1anindrv28jdg3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dzenis_ska.desk",
+            "certificate_hash": "c75fc54a22a45821a5bb77438a027e0dd0e8320b"
+          }
+        },
+        {
+          "client_id": "902360269968-grd4kmpj1lsoe2ose0bofehqvb1sub7u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCORbpYPu-sWDtvsnHRfBYAA_W1tlJ_Vi4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "902360269968-grd4kmpj1lsoe2ose0bofehqvb1sub7u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

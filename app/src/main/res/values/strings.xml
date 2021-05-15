@@ -1,0 +1,59 @@
+<resources>
+    <string name="app_name">Desk</string>
+    <string name="ad_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="ad_inter_id">ca-app-pub-3940256099942544/1033173712</string>
+
+    <!-- Menu Drawer Strings-->
+    <string name="add_cat_1">Объявления</string>
+    <string name="add_my_adds">Мои объявления</string>
+    <string name="add_my_car">Машины</string>
+    <string name="add_my_pc">Компьютеры</string>
+    <string name="add_my_smartphones">Смартфоны</string>
+    <string name="add_my_dm">Бытовая техника</string>
+    <string name="add_cat_2">Аккаунт</string>
+    <string name="ac_sign_up">Регистрация</string>
+    <string name="ac_sign_in">Вход</string>
+    <string name="ac_sign_out">Выход</string>
+    <string name="not_reg">Войдите либо зарегестрируйтесь!</string>
+    <!--Open-close drawer menu-->
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+    <!--Sign dialog-->
+    <string name="email_hint">Email</string>
+    <string name="email_reset_password_was_send">Email Reseted!</string>
+    <string name="send_your_email_for_">Пожалуйста, для восстановления пароля введите свой Email!</string>
+    <string name="password_hint">Password</string>
+    <string name="sign_up_action">Зарегистрироваться</string>
+    <string name="sign_in_action">Войти</string>
+    <string name="forget_password">Забыли пароль?</string>
+    <!--Account Helper-->
+    <string name="sign_up_erroro">Не Удалось Зарегистрироваться</string>
+    <string name="sign_in_erroro">Не Удалось Войти</string>
+    <string name="send_verification_email_error">Не Удалось Отправить Email для подтверждения!</string>
+    <string name="password_lenght">Password не должен содержать менее 6 символов!</string>
+    <string name="send_verification_done">На Вашу почту была отправленна ссылка для подтверждения Вашего аккаунта,
+        пожалуйста подтвердите Ваш аккаунт!</string>
+    <!--Link Email-->
+    <string name="link_done">Email привязан к Google-account</string>
+    <string name="enter_to_g">У Вас уже есть Google аккаунт с такой электронной почтой!Войдите по нему и продолжите регистрацию по Email!</string>
+    <!--Edit activity-->
+    <string name="select_country">*Выберите страну</string>
+    <string name="select_town">*Выберите город</string>
+    <string name="no_selected_country">Не выбрана страна!</string>
+    <string name="country">Страна:</string>
+    <string name="city">Город:</string>
+    <string name="index">Индекс:</string>
+    <string name="tel">Телефон:</string>
+    <string name="tel_number">*Номер телефона</string>
+    <string name="index_number">*Почтовый индекс</string>
+    <string name="category">Категория</string>
+    <string name="select_category">*Выберите категорию</string>
+    <string name="price">Цена</string>
+    <string name="price_hint">*Укажите цену</string>
+    <string name="description">Описание</string>
+    <string name="description_hint">*Описание</string>
+    <string name="with_send">С отправкой</string>
+    <string name="send">Доставка</string>
+    <string name="publish">Опубликовать</string>
+
+</resources>

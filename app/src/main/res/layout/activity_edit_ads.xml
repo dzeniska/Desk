@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/place_holder"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/grey_dark"
+    android:onClick="onClickSelectCountry"
+
+    tools:context=".act.EditAdsAct">
+
+    <ScrollView
+        android:id="@+id/scrollViewMain"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:orientation="vertical">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="8dp"
+                app:cardPreventCornerOverlap="false">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/vpImages"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:layout_margin="2dp"
+                        android:padding="5dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                    </androidx.viewpager2.widget.ViewPager2>
+
+                    <ImageButton
+                        android:id="@+id/imageButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/edit_image_button"
+                        android:onClick="onClickGetImages"
+                        android:padding="5dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_edit" />
+
+                    <ProgressBar
+                        android:id="@+id/pBarLoad"
+                        style="?android:attr/progressBarStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="@+id/vpImages"
+                        app:layout_constraintEnd_toEndOf="@+id/vpImages"
+                        app:layout_constraintStart_toStartOf="@+id/vpImages"
+                        app:layout_constraintTop_toTopOf="@+id/vpImages" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardAdress"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                app:cardCornerRadius="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvTitleCountry"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/country"
+                        android:textColor="@color/gren_main"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvCountry"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:onClick="onClickSelectCountry"
+                        android:paddingStart="8dp"
+                        android:paddingLeft="8dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:text="@string/select_country" />
+
+                    <TextView
+                        android:id="@+id/tvDivider1"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@color/gren_main" />
+
+                    <TextView
+                        android:id="@+id/tvTitleCity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/city"
+                        android:textColor="@color/gren_main"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvCity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:onClick="onClickSelectCity"
+                        android:paddingStart="8dp"
+                        android:paddingLeft="8dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:text="@string/select_town" />
+
+                    <TextView
+                        android:id="@+id/tvDivider2"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@color/gren_main" />
+
+                    <TextView
+                        android:id="@+id/tvTitleTel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/tel"
+                        android:textColor="@color/gren_main"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/editTel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:ems="10"
+                        android:hint="@string/tel_number"
+                        android:inputType="number"
+                        android:paddingStart="8dp"
+                        android:paddingLeft="8dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:textColorHint="@color/gray"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvDivider3"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@color/gren_main" />
+
+                    <TextView
+                        android:id="@+id/tvTitleIndex"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/index"
+                        android:textColor="@color/gren_main"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/edIndex"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:ems="10"
+                        android:hint="@string/index_number"
+                        android:inputType="number"
+                        android:paddingStart="8dp"
+                        android:paddingLeft="8dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:textColorHint="@color/gray"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvDivider4"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@color/gren_main" />
+
+                    <TextView
+                        android:id="@+id/tvSend"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/index"
+                        android:textColor="@color/gren_main"
+                        android:textStyle="bold" />
+
+                    <CheckBox
+                        android:id="@+id/checkBoxWithSend"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/with_send" />
+
+                    <TextView
+                        android:id="@+id/tvDivider5"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@color/gren_main" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardCategory"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="5dp"
+                app:cardCornerRadius="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvTitleCat"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/category"
+                        android:textColor="@color/gren_main"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvCat"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:onClick="onClickSelectCat"
+                        android:paddingStart="8dp"
+                        android:paddingLeft="8dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:text="@string/select_category" />
+
+                    <TextView
+                        android:id="@+id/tvDivider01"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@color/gren_main" />
+
+                    <TextView
+                        android:id="@+id/tvTitlePrice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/price"
+                        android:textColor="@color/gren_main"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/edPrice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:ems="10"
+                        android:hint="@string/price_hint"
+                        android:inputType="number"
+                        android:paddingStart="8dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:textColorHint="@color/gray"
+                        android:textSize="16sp"
+                        tools:ignore="RtlSymmetry" />
+
+                    <TextView
+                        android:id="@+id/tvDivider03"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@color/gren_main" />
+
+                    <TextView
+                        android:id="@+id/tvTitleDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/description"
+                        android:textColor="@color/gren_main"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/edDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:ems="10"
+                        android:hint="@string/description_hint"
+                        android:inputType="textMultiLine|text"
+                        android:paddingStart="18dp"
+                        android:paddingLeft="8dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:textColorHint="@color/gray"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvDivider04"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@color/gren_main" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <Button
+                android:id="@+id/btPublish"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
+                android:backgroundTint="@color/white"
+                android:text="@string/publish"
+                android:textColor="@color/gren_main" />
+
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

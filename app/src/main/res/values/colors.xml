@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="white_transparent_75">#BFFFFFFF</color>
+    <color name="white_transparent">#54FFFFFF</color>
+    <color name="white_blue">#BEF0F4</color>
+    <color name="item_text_color">#FF9100</color>
+    <color name="blue_light">#3f497a</color>
+    <color name="background_dialog_color">#00B8D4</color>
+    <color name="background_item">#F6F2AE</color>
+    <color name="ahtung">#FF570A</color>
+    <color name="gren_main">#B2FF59</color>
+    <color name="gren">#B9B4BFA7</color>
+    <color name="grey_dark">#B9727370</color>
+    <color name="gray">#E2E2E2</color>
+</resources>
