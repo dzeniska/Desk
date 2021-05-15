@@ -364,10 +364,11 @@
                 android:id="@+id/btPublish"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:layout_marginStart="6dp"
                 android:layout_marginEnd="6dp"
+                android:layout_marginBottom="8dp"
                 android:backgroundTint="@color/white"
+                android:onClick="onClickPublish"
                 android:text="@string/publish"
                 android:textColor="@color/gren_main" />
 

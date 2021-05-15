@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.dzenis_ska.desk.frag.FragmentCloseInterface
 import com.dzenis_ska.desk.R
 import com.dzenis_ska.desk.adapters.ImageAdapter
+import com.dzenis_ska.desk.database.DbManager
 import com.dzenis_ska.desk.databinding.ActivityEditAdsBinding
 import com.dzenis_ska.desk.dialogs.DialogSpinnerHelper
 import com.dzenis_ska.desk.frag.ImageListFrag
@@ -86,10 +87,8 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     }
 
     fun onClickSelectCat(view: View) {
-
         val listCat = resources.getStringArray(R.array.category).toMutableList() as ArrayList
         dialog.showSpinnerDialog(this, listCat, rootElement.tvCat)
-
     }
 
     fun onClickGetImages(view: View) {
@@ -99,6 +98,11 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
             openChooseImageFragment(null)
             chooseImageFrag?.updateAdapterFromEdit(imageAdapter.mainArray)
         }
+    }
+
+    fun onClickPublish(view: View){
+        val dbManager = DbManager()
+        dbManager.publishAd()
 
     }
 
