@@ -7,11 +7,11 @@ import com.google.firebase.ktx.Firebase
 
 class DbManager {
 
-    val db = Firebase.database.reference
+    val db = Firebase.database.getReference("main")
 
     fun publishAd(){
 
-        db.setValue("Hola!")
+        db.setValue("Hola2!")
         Log.d("!!!", "realTimeDataBase")
     }
 }
