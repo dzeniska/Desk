@@ -88,24 +88,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         rootElement.navView.setNavigationItemSelectedListener(this)
         tvAccount = rootElement.navView.getHeaderView(0).findViewById(R.id.tvAccauntEmail)
     }
-    private fun bottomMenuOnClick() = with(rootElement.mainContent.bNavView){
-        setOnNavigationItemSelectedListener {item->
+    private fun bottomMenuOnClick() = with(rootElement.mainContent){
+        bNavView.setOnNavigationItemSelectedListener {item->
             when (item.itemId){
                 R.id.id_new_ad ->{
-
                         val intent = Intent(this@MainActivity, EditAdsAct::class.java)
                         startActivity(intent)
-
-                    Toast.makeText(this@MainActivity, "pressed id_new_ad", Toast.LENGTH_SHORT).show()
                 }
                 R.id.id_my_ads ->{
-                    Toast.makeText(this@MainActivity, "pressed id_my_ads", Toast.LENGTH_SHORT).show()
+                    fireBaseViewModel.loadMyAds()
+                    toolbar.title = getString(R.string.add_my_adds)
                 }
                 R.id.id_favs ->{
                     Toast.makeText(this@MainActivity, "pressed id_favs", Toast.LENGTH_SHORT).show()
                 }
                 R.id.id_home ->{
-                    Toast.makeText(this@MainActivity, "pressed id_home", Toast.LENGTH_SHORT).show()
+                   fireBaseViewModel.loadAllAds()
+                    toolbar.title = getString(R.string.def)
                 }
             }
             true

@@ -10,6 +10,8 @@
     <string name="add_my_pc">Компьютеры</string>
     <string name="add_my_smartphones">Смартфоны</string>
     <string name="add_my_dm">Бытовая техника</string>
+    <string name="def">Разное</string>
+
     <string name="add_cat_2">Аккаунт</string>
     <string name="ac_sign_up">Регистрация</string>
     <string name="ac_sign_in">Вход</string>
