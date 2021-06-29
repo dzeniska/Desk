@@ -1,4 +1,4 @@
-package com.dzenis_ska.desk.data
+package com.dzenis_ska.desk.model
 
 data class Ad(
     val country: String? = null,
@@ -7,6 +7,9 @@ data class Ad(
     val index: String? = null,
     val withSend: String? = null,
     val category: String? = null,
+    val title: String? = null,
     val price: String? = null,
-    val description: String? = null
+    val description: String? = null,
+    val key: String? = null,
+    val uid: String? = null
 )

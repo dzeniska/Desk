@@ -1,29 +1,26 @@
 package com.dzenis_ska.desk.act
 
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import com.dzenis_ska.desk.frag.FragmentCloseInterface
 import com.dzenis_ska.desk.R
 import com.dzenis_ska.desk.adapters.ImageAdapter
-import com.dzenis_ska.desk.database.DbManager
+import com.dzenis_ska.desk.model.Ad
+import com.dzenis_ska.desk.model.DbManager
 import com.dzenis_ska.desk.databinding.ActivityEditAdsBinding
 import com.dzenis_ska.desk.dialogs.DialogSpinnerHelper
 import com.dzenis_ska.desk.frag.ImageListFrag
 import com.dzenis_ska.desk.utils.CityesHelper
-import com.dzenis_ska.desk.utils.ImageManager
 import com.dzenis_ska.desk.utils.ImagePicker
-import com.fxn.pix.Pix
 import com.fxn.utility.PermUtil
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 
 class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
@@ -31,7 +28,11 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     lateinit var rootElement: ActivityEditAdsBinding
     private val dialog = DialogSpinnerHelper()
     lateinit var imageAdapter: ImageAdapter
+    private val dbManager = DbManager()
     var editImagePos = 0
+    var launcherMultiSelectImage: ActivityResultLauncher<Intent>? = null
+    var launcherSingleSelectImage: ActivityResultLauncher<Intent>? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,31 +42,34 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
         init()
     }
 
+
     private fun init() {
         imageAdapter = ImageAdapter()
         rootElement.vpImages.adapter = imageAdapter
+        launcherMultiSelectImage = ImagePicker.getLauncherForMultiSelectImages(this)
+        launcherSingleSelectImage = ImagePicker.getLauncherForSingleImage(this)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         when (requestCode) {
             PermUtil.REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS -> {
-
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(this, "Approvecker", Toast.LENGTH_LONG).show()
-                    ImagePicker.getImages(this, 3, ImagePicker.REQUEST_CODE_GET_IMAGES)
+//                    ImagePicker.getOptions(3)
                 } else {
                     Toast.makeText(this, "Approve permissions to open Pix ImagePicker", Toast.LENGTH_LONG).show()
                 }
                 return
             }
         }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        ImagePicker.showSelectedImages(resultCode, requestCode, data, this)
-    }
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        ImagePicker.showSelectedImages(resultCode, requestCode, data, this)
+//    }
 
     //OnClicks
     fun onClickSelectCountry(view: View) {
@@ -93,17 +97,37 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
 
     fun onClickGetImages(view: View) {
         if (imageAdapter.mainArray.size == 0) {
-            ImagePicker.getImages(this, 3, ImagePicker.REQUEST_CODE_GET_IMAGES)
+            ImagePicker.launcher(this, launcherMultiSelectImage, 7)
         } else {
             openChooseImageFragment(null)
             chooseImageFrag?.updateAdapterFromEdit(imageAdapter.mainArray)
         }
     }
 
-    fun onClickPublish(view: View){
-        val dbManager = DbManager()
-        dbManager.publishAd()
+    fun onClickPublish(view: View) {
 
+        dbManager.publishAd(fillAd())
+
+    }
+
+    private fun fillAd(): Ad {
+        val ad: Ad
+        rootElement.apply {
+            ad = Ad(
+                tvCountry.text.toString(),
+                tvCity.text.toString(),
+                editTel.text.toString(),
+                edIndex.text.toString(),
+                checkBoxWithSend.isChecked.toString(),
+                tvCat.text.toString(),
+                edTitle.text.toString(),
+                edPrice.text.toString(),
+                edDescription.text.toString(),
+                dbManager.db.push().key,
+                dbManager.auth.uid
+            )
+        }
+        return ad
     }
 
     override fun onFragClose(list: ArrayList<Bitmap>) {

@@ -47,13 +47,19 @@
     <string name="tel_number">*Номер телефона</string>
     <string name="index_number">*Почтовый индекс</string>
     <string name="category">Категория</string>
+    <string name="title">Заголовок</string>
     <string name="select_category">*Выберите категорию</string>
     <string name="price">Цена</string>
+
     <string name="price_hint">*Укажите цену</string>
+    <string name="title_hint">*Название объявления</string>
     <string name="description">Описание</string>
     <string name="description_hint">*Описание</string>
     <string name="with_send">С отправкой</string>
     <string name="send">Доставка</string>
     <string name="publish">Опубликовать</string>
+
+    <!--Ad List Item-->
+    <string name="price_desc">Цена:</string>
 
 </resources>

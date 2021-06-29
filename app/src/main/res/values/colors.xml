@@ -19,4 +19,8 @@
     <color name="gren">#B9B4BFA7</color>
     <color name="grey_dark">#B9727370</color>
     <color name="gray">#E2E2E2</color>
+    <color name="red" />
+    <color name="red_2">#FF1744</color>
+    <color name="yellow">#FFC107</color>
+    <color name="red_3">#F11D0E</color>
 </resources>

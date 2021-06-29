@@ -38,9 +38,11 @@ class DialogHelper(private val activity: MainActivity) {
         rootDialogElement.btSignUpIn.setOnClickListener(){
             setOnClickSignUpIn(dialog, rootDialogElement, index)
         }
+
         rootDialogElement.btForgetP.setOnClickListener(){
             setOnClickResetPassword(dialog, rootDialogElement)
         }
+
         rootDialogElement.btnGoogleSignIn.setOnClickListener(){
             accHelper.signInWithGoogle()
             dialog.dismiss()

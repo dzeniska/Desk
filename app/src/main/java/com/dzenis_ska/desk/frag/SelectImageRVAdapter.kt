@@ -2,6 +2,7 @@ package com.dzenis_ska.desk.frag
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -56,8 +57,7 @@ class   SelectImageRVAdapter(val adapterCallBack: AdapterCallBack) : RecyclerVie
                     adapter.adapterCallBack.onItemDelete()
                 }
                 imEditImage.setOnClickListener(){
-
-                    ImagePicker.getImages(context as EditAdsAct, 1, ImagePicker.REQUEST_CODE_GET_SINGLE_IMAGE)
+                    ImagePicker.launcher(context as EditAdsAct, context.launcherSingleSelectImage, 1)
                     context.editImagePos = adapterPosition
                 }
                 tvTitle.text = context.resources.getStringArray(R.array.title_array)[adapterPosition]
@@ -71,6 +71,7 @@ class   SelectImageRVAdapter(val adapterCallBack: AdapterCallBack) : RecyclerVie
     fun updateAdapter(newList: List<Bitmap>, needClear: Boolean){
         if(needClear) mainArray.clear()
         mainArray.addAll(newList)
+        Log.d("!!!!", "$newList")
         notifyDataSetChanged()
     }
 
