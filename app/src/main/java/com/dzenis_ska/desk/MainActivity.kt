@@ -21,6 +21,7 @@ import com.dzenis_ska.desk.databinding.ActivityMainBinding
 import com.dzenis_ska.desk.dialoghelper.DialogConst
 import com.dzenis_ska.desk.dialoghelper.DialogHelper
 import com.dzenis_ska.desk.dialoghelper.GoogleAccConst
+import com.dzenis_ska.desk.model.Ad
 import com.dzenis_ska.desk.viewmodel.FirebaseViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
@@ -30,12 +31,12 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, AdsRcAdapter.DeleteItemListener {
     private lateinit var tvAccount: TextView
     private lateinit var rootElement: ActivityMainBinding
     private val dialogHelper = DialogHelper(this)
     val mAuth = Firebase.auth
-    val adapter = AdsRcAdapter(mAuth)
+    val adapter = AdsRcAdapter(this)
     private val fireBaseViewModel: FirebaseViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -172,4 +173,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onResume()
         rootElement.mainContent.bNavView.selectedItemId = R.id.id_home
     }
+
+    companion object {
+        const val EDIT_STATE = "edit_state"
+        const val ADS_DATA = "ads_data"
+    }
+
+    override fun onDeleteItem(ad: Ad) {
+        fireBaseViewModel.deleteItem(ad)
+    }
+
 }

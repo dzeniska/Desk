@@ -7,9 +7,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
+import com.dzenis_ska.desk.MainActivity
 import com.dzenis_ska.desk.frag.FragmentCloseInterface
 import com.dzenis_ska.desk.R
 import com.dzenis_ska.desk.adapters.ImageAdapter
@@ -29,10 +28,13 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     private val dialog = DialogSpinnerHelper()
     lateinit var imageAdapter: ImageAdapter
     private val dbManager = DbManager()
-    var editImagePos = 0
+
     var launcherMultiSelectImage: ActivityResultLauncher<Intent>? = null
     var launcherSingleSelectImage: ActivityResultLauncher<Intent>? = null
 
+    var editImagePos = 0
+    private var isEditState = false
+    private var ad:Ad? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +42,31 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
         val view = rootElement.root
         setContentView(view)
         init()
+        checkEditState()
+    }
+    private fun checkEditState(){
+        isEditState = isEditState()
+        if(isEditState){
+            ad = intent.getSerializableExtra(MainActivity.ADS_DATA) as Ad
+            ad?.let {ad -> fillViews(ad) }
+        }
+    }
+
+    private fun isEditState(): Boolean{
+        return intent.getBooleanExtra(MainActivity.EDIT_STATE, false)
+    }
+
+    private fun fillViews(ad: Ad) = with(rootElement){
+        tvCountry.text = ad.country
+        tvCity.text = ad.city
+        editTel.setText(ad.tel)
+        edIndex.setText(ad.index)
+        checkBoxWithSend.isChecked = ad.withSend.toBoolean()
+        tvCat.text = ad.category
+        edTitle.setText(ad.title)
+        edPrice.setText(ad.price)
+        edDescription.setText(ad.description)
+
     }
 
 
@@ -105,9 +132,20 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     }
 
     fun onClickPublish(view: View) {
+        val adTemp = fillAd()
+        if(isEditState) {
+            dbManager.publishAd(adTemp.copy(key = ad?.key), onPublishFinish())
+        }else{
+            dbManager.publishAd(adTemp, onPublishFinish())
+        }
 
-        dbManager.publishAd(fillAd())
-
+    }
+    private fun onPublishFinish(): DbManager.FinishWorkListener{
+        return object: DbManager.FinishWorkListener{
+            override fun onFinish() {
+               finish()
+            }
+        }
     }
 
     private fun fillAd(): Ad {
