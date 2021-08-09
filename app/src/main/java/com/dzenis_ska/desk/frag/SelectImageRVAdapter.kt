@@ -57,7 +57,7 @@ class   SelectImageRVAdapter(val adapterCallBack: AdapterCallBack) : RecyclerVie
                     adapter.adapterCallBack.onItemDelete()
                 }
                 imEditImage.setOnClickListener(){
-                    ImagePicker.launcher(context as EditAdsAct, context.launcherSingleSelectImage, 1)
+                    ImagePicker.launcher(context as EditAdsAct, 1)
                     context.editImagePos = adapterPosition
                 }
                 tvTitle.text = context.resources.getStringArray(R.array.title_array)[adapterPosition]

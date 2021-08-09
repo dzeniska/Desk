@@ -15,8 +15,6 @@ class DialogHelper(private val activity: MainActivity) {
 
      val accHelper = AccountHelper(activity)
 
-
-
     fun createSignDialog(index: Int){
         val builder = AlertDialog.Builder(activity)
         val rootDialogElement = SignDialogBinding.inflate(activity.layoutInflater)

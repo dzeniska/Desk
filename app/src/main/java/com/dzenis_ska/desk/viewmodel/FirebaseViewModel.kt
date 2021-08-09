@@ -17,6 +17,39 @@ class FirebaseViewModel: ViewModel() {
             }
         })
     }
+
+    fun onFavClick(ad: Ad){
+        dbManager.onFavClick(ad, object : DbManager.FinishWorkListener{
+            override fun onFinish() {
+                val updatedList = liveAdsData.value
+                val pos = updatedList?.indexOf(ad)
+                if(pos != -1) {
+                    pos?.let{
+                        val favCounter = if(ad.isFav) ad.favCounter.toInt() - 1 else ad.favCounter.toInt() + 1
+                        updatedList[pos] = updatedList[pos].copy(isFav = !ad.isFav, favCounter = favCounter.toString())
+                    }
+                }
+                liveAdsData.postValue(updatedList)
+            }
+        })
+    }
+
+    fun adViewed(ad: Ad){
+        dbManager.adViewed(ad, object : DbManager.FinishWorkListener{
+            override fun onFinish() {
+                val updatedList = liveAdsData.value
+                val pos = updatedList?.indexOf(ad)
+                if(pos != -1) {
+                    pos?.let{
+                        val viewCounter = ad.viewsCounter.toInt() + 1
+                        updatedList[pos] = updatedList[pos].copy(viewsCounter = viewCounter.toString())
+                    }
+                }
+                liveAdsData.postValue(updatedList)
+            }
+        })
+    }
+
     fun loadMyAds(){
         dbManager.getMyAds(object: DbManager.ReadDataCallback{
             override fun readData(list: ArrayList<Ad>) {
@@ -24,6 +57,15 @@ class FirebaseViewModel: ViewModel() {
             }
         })
     }
+
+    fun loadMyFavs(){
+        dbManager.getMyFavs(object: DbManager.ReadDataCallback{
+            override fun readData(list: ArrayList<Ad>) {
+                liveAdsData.value = list
+            }
+        })
+    }
+
     fun deleteItem(ad: Ad){
         dbManager.deleteAd(ad, object : DbManager.FinishWorkListener{
             override fun onFinish() {

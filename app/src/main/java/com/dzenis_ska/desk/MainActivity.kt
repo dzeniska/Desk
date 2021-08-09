@@ -1,20 +1,19 @@
 package com.dzenis_ska.desk
 
-import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.inputmethod.InputMethodManager
+import android.view.animation.AnimationUtils
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.dzenis_ska.desk.accountHelper.AccountHelper
 import com.dzenis_ska.desk.act.EditAdsAct
 import com.dzenis_ska.desk.adapters.AdsRcAdapter
 import com.dzenis_ska.desk.databinding.ActivityMainBinding
@@ -31,7 +30,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, AdsRcAdapter.DeleteItemListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, AdsRcAdapter.Listener {
     private lateinit var tvAccount: TextView
     private lateinit var rootElement: ActivityMainBinding
     private val dialogHelper = DialogHelper(this)
@@ -43,6 +42,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onCreate(savedInstanceState)
         rootElement = ActivityMainBinding.inflate(layoutInflater)
         val view = rootElement.root
+
         setContentView(view)
         init()
         initRecyclerView()
@@ -69,6 +69,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun initViewModel(){
         fireBaseViewModel.liveAdsData.observe(this, {listAd->
+            rootElement.mainContent.tvEmpty.apply{
+                if(listAd.isEmpty()){
+                    visibility = View.VISIBLE
+                    animation = AnimationUtils.loadAnimation(context, R.anim.alpha)
+                }else{
+                    visibility = View.GONE
+                }
+            }
             adapter.updateAdapter(listAd)
         })
     }
@@ -101,6 +109,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     toolbar.title = getString(R.string.add_my_adds)
                 }
                 R.id.id_favs ->{
+                    fireBaseViewModel.loadMyFavs()
                     Toast.makeText(this@MainActivity, "pressed id_favs", Toast.LENGTH_SHORT).show()
                 }
                 R.id.id_home ->{
@@ -116,6 +125,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         rootElement.apply {
             mainContent.rcView.layoutManager = LinearLayoutManager(this@MainActivity)
             mainContent.rcView.adapter = adapter
+
         }
     }
 
@@ -145,6 +155,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 //Toast.makeText(this, "id_sign_in", Toast.LENGTH_SHORT ).show()
             }
             R.id.id_sign_out -> {
+                if(mAuth.currentUser?.isAnonymous == true){
+                    rootElement.drawerLayout.closeDrawer(GravityCompat.START)
+                    return true
+                }
                 uiUpdate(null)
                 mAuth.signOut()
                 dialogHelper.accHelper.signOutG()
@@ -156,10 +170,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun uiUpdate(user: FirebaseUser?) {
         Log.d("!!!", user.toString())
-        tvAccount.text = if (user == null) {
-            resources.getString(R.string.not_reg)
-        } else {
-            user.email
+        if (user == null) {
+//            resources.getString(R.string.not_reg)
+            dialogHelper.accHelper.signInAnonimously(object : AccountHelper.Listener{
+                override fun onComplete(listener: AccountHelper.Listener) {
+                    tvAccount.text = "Гость"
+                }
+            })
+        } else if(user.isAnonymous){
+            tvAccount.text = "Гость"
+
+        }else if(!user.isAnonymous){
+            tvAccount.text = user.email
         }
     }
 
@@ -181,6 +203,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onDeleteItem(ad: Ad) {
         fireBaseViewModel.deleteItem(ad)
+    }
+
+    override fun onAdViewed(ad: Ad) {
+        //эта строчка убирает мерцание итема вроде
+        rootElement.mainContent.rcView.itemAnimator?.changeDuration = 250
+        fireBaseViewModel.adViewed(ad)
+    }
+
+    override fun onFavClicked(ad: Ad) {
+        rootElement.mainContent.rcView.itemAnimator?.changeDuration = 0
+        fireBaseViewModel.onFavClick(ad)
     }
 
 }

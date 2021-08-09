@@ -45,4 +45,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/botoom_main_menu" />
 
+    <TextView
+        android:id="@+id/tvEmpty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="Empty"
+
+
+        android:textColor="#888585"
+        android:textSize="48sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/rcView"
+        app:layout_constraintEnd_toEndOf="@+id/rcView"
+        app:layout_constraintStart_toStartOf="@+id/rcView"
+        app:layout_constraintTop_toTopOf="@+id/rcView" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

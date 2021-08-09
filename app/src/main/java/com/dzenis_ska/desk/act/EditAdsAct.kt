@@ -3,6 +3,7 @@ package com.dzenis_ska.desk.act
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -19,7 +20,6 @@ import com.dzenis_ska.desk.dialogs.DialogSpinnerHelper
 import com.dzenis_ska.desk.frag.ImageListFrag
 import com.dzenis_ska.desk.utils.CityesHelper
 import com.dzenis_ska.desk.utils.ImagePicker
-import com.fxn.utility.PermUtil
 
 
 class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
@@ -29,8 +29,6 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     lateinit var imageAdapter: ImageAdapter
     private val dbManager = DbManager()
 
-    var launcherMultiSelectImage: ActivityResultLauncher<Intent>? = null
-    var launcherSingleSelectImage: ActivityResultLauncher<Intent>? = null
 
     var editImagePos = 0
     private var isEditState = false
@@ -73,25 +71,9 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     private fun init() {
         imageAdapter = ImageAdapter()
         rootElement.vpImages.adapter = imageAdapter
-        launcherMultiSelectImage = ImagePicker.getLauncherForMultiSelectImages(this)
-        launcherSingleSelectImage = ImagePicker.getLauncherForSingleImage(this)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        when (requestCode) {
-            PermUtil.REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS -> {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Approvecker", Toast.LENGTH_LONG).show()
-//                    ImagePicker.getOptions(3)
-                } else {
-                    Toast.makeText(this, "Approve permissions to open Pix ImagePicker", Toast.LENGTH_LONG).show()
-                }
-                return
-            }
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
+
 
 //    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 //        super.onActivityResult(requestCode, resultCode, data)
@@ -124,7 +106,7 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
 
     fun onClickGetImages(view: View) {
         if (imageAdapter.mainArray.size == 0) {
-            ImagePicker.launcher(this, launcherMultiSelectImage, 7)
+            ImagePicker.launcher(this, 3)
         } else {
             openChooseImageFragment(null)
             chooseImageFrag?.updateAdapterFromEdit(imageAdapter.mainArray)
@@ -162,6 +144,7 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
                 edPrice.text.toString(),
                 edDescription.text.toString(),
                 dbManager.db.push().key,
+                "0",
                 dbManager.auth.uid
             )
         }
@@ -174,7 +157,7 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
         imageAdapter.update(list)
     }
 
-    fun openChooseImageFragment(returnValues: ArrayList<String>?) {
+    fun openChooseImageFragment(returnValues: ArrayList<Uri>?) {
         chooseImageFrag = ImageListFrag(this, returnValues)
         rootElement.scrollViewMain.visibility = View.GONE
         val fm = supportFragmentManager.beginTransaction()
