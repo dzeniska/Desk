@@ -3,7 +3,6 @@ package com.dzenis_ska.desk.dialoghelper
 import android.app.Activity
 import android.app.AlertDialog
 import com.dzenis_ska.desk.databinding.ProgressDialogLayoutBinding
-import com.dzenis_ska.desk.databinding.SignDialogBinding
 
 object ProgressDialog {
 

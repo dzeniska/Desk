@@ -2,24 +2,32 @@ package com.dzenis_ska.desk
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.AnimationUtils
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.dzenis_ska.desk.accountHelper.AccountHelper
+import com.dzenis_ska.desk.act.DescriptionActivity
 import com.dzenis_ska.desk.act.EditAdsAct
 import com.dzenis_ska.desk.adapters.AdsRcAdapter
 import com.dzenis_ska.desk.databinding.ActivityMainBinding
 import com.dzenis_ska.desk.dialoghelper.DialogConst
 import com.dzenis_ska.desk.dialoghelper.DialogHelper
-import com.dzenis_ska.desk.dialoghelper.GoogleAccConst
 import com.dzenis_ska.desk.model.Ad
 import com.dzenis_ska.desk.viewmodel.FirebaseViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -28,77 +36,85 @@ import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.squareup.picasso.Picasso
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, AdsRcAdapter.Listener {
     private lateinit var tvAccount: TextView
-    private lateinit var rootElement: ActivityMainBinding
+    private lateinit var imAccount: ImageView
+    private lateinit var binding: ActivityMainBinding
     private val dialogHelper = DialogHelper(this)
     val mAuth = Firebase.auth
     val adapter = AdsRcAdapter(this)
+    lateinit var googleSignInLauncher: ActivityResultLauncher<Intent>
     private val fireBaseViewModel: FirebaseViewModel by viewModels()
+    private var clearUpdate: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        rootElement = ActivityMainBinding.inflate(layoutInflater)
-        val view = rootElement.root
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
 
         setContentView(view)
         init()
+        onActivityResult()
+        navViewSettings()
         initRecyclerView()
         initViewModel()
-        fireBaseViewModel.loadAllAds()
+//        fireBaseViewModel.loadAllAds("0")
         bottomMenuOnClick()
+        scrollListener()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == GoogleAccConst.GOOGLE_SIGN_IN_REQUEST_CODE) {
-//            Log.d("!!!", "asdajdkjas")
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            try {
-                val account = task.getResult(ApiException::class.java)
-                if (account != null) {
-                    dialogHelper.accHelper.signInFirebaseWithGoogle(account.idToken!!)
+    private fun onActivityResult() {
+            googleSignInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){result->
+                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                try {
+                    val account = task.getResult(ApiException::class.java)
+                    if (account != null) {
+                        dialogHelper.accHelper.signInFirebaseWithGoogle(account.idToken!!)
+                    }
+                } catch (e: ApiException) {
+                    Log.d("!!!", "Api error: ${e.message}")
                 }
-            } catch (e: ApiException) {
-                Log.d("!!!", "Api error: ${e.message}")
+
             }
-        }
-        super.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun initViewModel(){
         fireBaseViewModel.liveAdsData.observe(this, {listAd->
-            rootElement.mainContent.tvEmpty.apply{
-                if(listAd.isEmpty()){
-                    visibility = View.VISIBLE
-                    animation = AnimationUtils.loadAnimation(context, R.anim.alpha)
-                }else{
-                    visibility = View.GONE
-                }
+            Log.d("!!!itemCount", "${adapter.itemCount}")
+            binding.mainContent.tvEmpty.visibility = if(adapter.itemCount == 0) View.VISIBLE else View.GONE
+//                    animation = AnimationUtils.loadAnimation(context, R.anim.alpha)
+
+            if(!clearUpdate) {
+                adapter.updateAdapter(listAd)
+            }else{
+                adapter.updateAdapterWithClear(listAd)
             }
-            adapter.updateAdapter(listAd)
         })
     }
 
     private fun init() {
-        setSupportActionBar(rootElement.mainContent.toolbar)
+        setSupportActionBar(binding.mainContent.toolbar)
         //Кнопка в тулбаре
         val toggle = ActionBarDrawerToggle(
             this,
-            rootElement.drawerLayout,
-            rootElement.mainContent.toolbar,
+            binding.drawerLayout,
+            binding.mainContent.toolbar,
             R.string.open,
             R.string.close
         )
-        rootElement.drawerLayout.addDrawerListener(toggle)
+        binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
-        rootElement.navView.setNavigationItemSelectedListener(this)
-        tvAccount = rootElement.navView.getHeaderView(0).findViewById(R.id.tvAccauntEmail)
+        binding.navView.setNavigationItemSelectedListener(this)
+        tvAccount = binding.navView.getHeaderView(0).findViewById(R.id.tvAccauntEmail)
+        imAccount = binding.navView.getHeaderView(0).findViewById(R.id.imAccauntImage)
     }
-    private fun bottomMenuOnClick() = with(rootElement.mainContent){
+    private fun bottomMenuOnClick() = with(binding.mainContent){
         bNavView.setOnNavigationItemSelectedListener {item->
+            clearUpdate = true
             when (item.itemId){
                 R.id.id_new_ad ->{
                         val intent = Intent(this@MainActivity, EditAdsAct::class.java)
@@ -113,7 +129,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     Toast.makeText(this@MainActivity, "pressed id_favs", Toast.LENGTH_SHORT).show()
                 }
                 R.id.id_home ->{
-                   fireBaseViewModel.loadAllAds()
+                   fireBaseViewModel.loadAllAds("0")
                     toolbar.title = getString(R.string.def)
                 }
             }
@@ -122,7 +138,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun initRecyclerView() {
-        rootElement.apply {
+        binding.apply {
             mainContent.rcView.layoutManager = LinearLayoutManager(this@MainActivity)
             mainContent.rcView.adapter = adapter
 
@@ -130,6 +146,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        clearUpdate = true
         when (item.itemId) {
             R.id.id_my_adds -> {
                 Toast.makeText(this, "id_my_adds", Toast.LENGTH_SHORT).show()
@@ -156,7 +173,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.id_sign_out -> {
                 if(mAuth.currentUser?.isAnonymous == true){
-                    rootElement.drawerLayout.closeDrawer(GravityCompat.START)
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
                     return true
                 }
                 uiUpdate(null)
@@ -164,7 +181,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 dialogHelper.accHelper.signOutG()
             }
         }
-        rootElement.drawerLayout.closeDrawer(GravityCompat.START)
+        binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
 
@@ -175,13 +192,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             dialogHelper.accHelper.signInAnonimously(object : AccountHelper.Listener{
                 override fun onComplete(listener: AccountHelper.Listener) {
                     tvAccount.text = "Гость"
+                    imAccount.setImageResource(R.drawable.ic_account_def)
                 }
             })
         } else if(user.isAnonymous){
             tvAccount.text = "Гость"
-
+            imAccount.setImageResource(R.drawable.ic_account_def)
         }else if(!user.isAnonymous){
             tvAccount.text = user.email
+            Picasso.get().load(user.photoUrl).into(imAccount)
         }
     }
 
@@ -193,12 +212,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onResume() {
         super.onResume()
-        rootElement.mainContent.bNavView.selectedItemId = R.id.id_home
-    }
-
-    companion object {
-        const val EDIT_STATE = "edit_state"
-        const val ADS_DATA = "ads_data"
+        binding.mainContent.bNavView.selectedItemId = R.id.id_home
     }
 
     override fun onDeleteItem(ad: Ad) {
@@ -207,13 +221,50 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onAdViewed(ad: Ad) {
         //эта строчка убирает мерцание итема вроде
-        rootElement.mainContent.rcView.itemAnimator?.changeDuration = 250
+        binding.mainContent.rcView.itemAnimator?.changeDuration = 250
         fireBaseViewModel.adViewed(ad)
+        val i = Intent(this, DescriptionActivity::class.java)
+        i.putExtra("AD", ad)
+        startActivity(i)
     }
 
     override fun onFavClicked(ad: Ad) {
-        rootElement.mainContent.rcView.itemAnimator?.changeDuration = 0
+        binding.mainContent.rcView.itemAnimator?.changeDuration = 0
         fireBaseViewModel.onFavClick(ad)
+    }
+    private fun navViewSettings() = with(binding){
+        val menu = navView.menu
+        val adsCat = menu.findItem(R.id.adsCat)
+        val spanAdsCat = SpannableString(adsCat.title)
+        spanAdsCat.setSpan(ForegroundColorSpan(ContextCompat.getColor(this@MainActivity, R.color.red_3)), 0, adsCat.title.length, 0)
+        adsCat.title = spanAdsCat
+        val accCat = menu.findItem(R.id.accCat)
+        val spanAccCat = SpannableString(accCat.title)
+        spanAccCat.setSpan(ForegroundColorSpan(ContextCompat.getColor(this@MainActivity, R.color.red_2)), 0, accCat.title.length, 0)
+        accCat.title = spanAccCat
+    }
+    private fun scrollListener() = with(binding.mainContent){
+        rcView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+//                Log.d("!!!scrollState", "${newState}")
+                if(!recyclerView.canScrollVertically(SCROLL_DOWN)
+                    && newState == RecyclerView.SCROLL_STATE_IDLE){
+                        clearUpdate = false
+//                    Log.d("!!!scroll", "${newState}")
+                    val adsList = fireBaseViewModel.liveAdsData.value!!
+                    if(adsList.isNotEmpty()) {
+                        adsList[adsList.size - 1].let { fireBaseViewModel.loadAllAds(it.time) }
+                    }
+                }
+            }
+        })
+    }
+
+    companion object {
+        const val EDIT_STATE = "edit_state"
+        const val ADS_DATA = "ads_data"
+        const val SCROLL_DOWN = 1
     }
 
 }

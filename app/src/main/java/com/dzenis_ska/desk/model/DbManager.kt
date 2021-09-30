@@ -14,11 +14,13 @@ import com.google.firebase.database.Query
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import kotlin.coroutines.coroutineContext
 
 class DbManager {
 
     val db = Firebase.database.getReference(MAIN_NODE)
+    val dbStorage = Firebase.storage.getReference(MAIN_NODE)
     val auth = Firebase.auth
 
     fun publishAd(ad: Ad, finishListener: FinishWorkListener){
@@ -80,8 +82,9 @@ class DbManager {
         readDataFromDb(query, readDataCallback)
     }
 
-    fun getAllAds(readDataCallback: ReadDataCallback?){
-        val query = db.orderByChild(auth.uid + "/ad/country")
+    fun getAllAds(lastTime: String, readDataCallback: ReadDataCallback?){
+        val query = db.orderByChild(auth.uid + "/ad/time")
+            .startAfter(lastTime).limitToFirst(ADS_LIMIT)
         readDataFromDb(query, readDataCallback)
     }
 
@@ -135,5 +138,6 @@ class DbManager {
         const val INFO_NODE = "info"
         const val MAIN_NODE = "main"
         const val FAVS_NODE = "favs"
+        const val ADS_LIMIT = 2
     }
 }

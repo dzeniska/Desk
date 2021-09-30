@@ -9,10 +9,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.dzenis_ska.desk.MainActivity
 import com.dzenis_ska.desk.R
+import com.dzenis_ska.desk.act.DescriptionActivity
 import com.dzenis_ska.desk.act.EditAdsAct
 import com.dzenis_ska.desk.model.Ad
 import com.dzenis_ska.desk.databinding.AdListItemBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.squareup.picasso.Picasso
 
 class AdsRcAdapter(val act: MainActivity) : RecyclerView.Adapter<AdsRcAdapter.AdHolder>() {
 
@@ -32,12 +34,19 @@ class AdsRcAdapter(val act: MainActivity) : RecyclerView.Adapter<AdsRcAdapter.Ad
     }
 
     fun updateAdapter(newList: List<Ad>) {
-
+        val tempArray = ArrayList<Ad>()
+        tempArray.addAll(adArray)
+        tempArray.addAll(newList)
+        val diffResult = DiffUtil.calculateDiff(DiffUtilHelper(adArray, tempArray))
+        diffResult.dispatchUpdatesTo(this)
+        adArray.clear()
+        adArray.addAll(tempArray)
+    }
+    fun updateAdapterWithClear(newList: List<Ad>) {
         val diffResult = DiffUtil.calculateDiff(DiffUtilHelper(adArray, newList))
         diffResult.dispatchUpdatesTo(this)
         adArray.clear()
         adArray.addAll(newList)
-
     }
 
     class AdHolder(val binding: AdListItemBinding, val act: MainActivity) :
@@ -52,27 +61,31 @@ class AdsRcAdapter(val act: MainActivity) : RecyclerView.Adapter<AdsRcAdapter.Ad
             tvViewCounter.text = ad.viewsCounter
             tvFavCounter.text = ad.favCounter
             Log.d("!!!isFav", "${ad.isFav}")
+            Picasso.get().load(ad.mainImage).into(mainImage)
+
+            isFav(ad)
+            showEditPanel(isOwner(ad))
+            mainOnClick(ad)
+
+        }
+        private fun mainOnClick(ad: Ad) = with(binding){
+            itemView.setOnClickListener {
+                act.onAdViewed(ad)
+            }
+            ibFav.setOnClickListener {
+                if(act.mAuth.currentUser?.isAnonymous == false) act.onFavClicked(ad)
+            }
+            ibEditAd.setOnClickListener(onClickEdit(ad))
+            ibDeleteAd.setOnClickListener {
+                act.onDeleteItem(ad)
+            }
+        }
+        private fun isFav(ad: Ad) = with(binding){
             if(ad.isFav){
                 ibFav.setImageResource(R.drawable.ic_fav_pressed)
             }else{
                 ibFav.setImageResource(R.drawable.ic_fav_normal)
             }
-            showEditPanel(isOwner(ad))
-
-            itemView.setOnClickListener {
-                act.onAdViewed(ad)
-            }
-
-            ibFav.setOnClickListener {
-                if(act.mAuth.currentUser?.isAnonymous == false) act.onFavClicked(ad)
-            }
-
-            ibEditAd.setOnClickListener(onClickEdit(ad))
-
-            ibDeleteAd.setOnClickListener {
-                act.onDeleteItem(ad)
-            }
-
         }
 
         private fun onClickEdit(ad: Ad): View.OnClickListener {

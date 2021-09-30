@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-        <item android:title="@string/add_cat_1">
+        <item android:title="@string/add_cat_1"
+            android:id="@+id/adsCat">
             <menu>
                 <group android:checkableBehavior="single">
                 <item
@@ -34,7 +35,8 @@
                 </group>
             </menu>
         </item>
-        <item android:title="@string/add_cat_2">
+        <item android:title="@string/add_cat_2"
+            android:id="@+id/accCat">
             <menu>
                 <group android:checkableBehavior="single">
                 <item

@@ -13,7 +13,6 @@ import androidx.core.view.get
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.dzenis_ska.desk.MainActivity
 import com.dzenis_ska.desk.R
 import com.dzenis_ska.desk.act.EditAdsAct
 import com.dzenis_ska.desk.databinding.ListImageFragBinding
@@ -27,7 +26,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, private val newList: ArrayList<Uri>?) : BaseAdsFrag(), AdapterCallBack {
+class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface) : BaseAdsFrag(), AdapterCallBack {
 
     val adapter = SelectImageRVAdapter(this)
     val dragCallback = ItemTouchMoveCallback(adapter)
@@ -51,7 +50,6 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
             touchHelper.attachToRecyclerView(rcViewSelectImage)
             rcViewSelectImage.layoutManager = LinearLayoutManager(activity)
             rcViewSelectImage.adapter = adapter
-            if (newList != null) resizeSelectedImages(newList, true)
         }
     }
 
@@ -63,21 +61,17 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
         adapter.updateAdapter(bitmapList, true)
     }
 
-    override fun onDetach() {
-        super.onDetach()
+    override fun onClose() {
+        super.onClose()
+        activity?.supportFragmentManager?.beginTransaction()?.remove(this@ImageListFrag)?.commit()
         fragCloseInterface.onFragClose(adapter.mainArray)
         job?.cancel()
     }
 
-    override fun onClose() {
-        super.onClose()
-        activity?.supportFragmentManager?.beginTransaction()?.remove(this@ImageListFrag)?.commit()
-    }
-
-    private fun resizeSelectedImages(newList: ArrayList<Uri>, needClear: Boolean) {
+    fun resizeSelectedImages(newList: ArrayList<Uri>, needClear: Boolean, activity: Activity) {
         job = CoroutineScope(Dispatchers.Main).launch {
-            val dialog = ProgressDialog.createProgressDialog(activity as Activity)
-            val bitmapList = ImageManager.imageResize(newList, activity as Activity)
+            val dialog = ProgressDialog.createProgressDialog(activity)
+            val bitmapList = ImageManager.imageResize(newList, activity)
             dialog.dismiss()
             adapter.updateAdapter(bitmapList, needClear)
             if (adapter.mainArray.size > 2) {
@@ -94,6 +88,9 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
             tb.setNavigationOnClickListener {
                 showInterAd()
             }
+
+            if (adapter.mainArray.size > 2) addImageItem?.isVisible = false
+
             deleteItem.setOnMenuItemClickListener {
                 adapter.updateAdapter(ArrayList(), true)
                 addImageItem?.isVisible = true
@@ -101,14 +98,14 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface, priv
             }
             addImageItem?.setOnMenuItemClickListener {
                 val imageCount = ImagePicker.MAX_IMAGE_COUNT - adapter.mainArray.size
-                ImagePicker.launcher(activity as EditAdsAct, imageCount)
+                ImagePicker.addImages(activity as EditAdsAct, imageCount)
                 true
             }
         }
     }
 
-    fun updateAdapter(newList: ArrayList<Uri>) {
-        resizeSelectedImages(newList, false)
+    fun updateAdapter(newList: ArrayList<Uri>, activity: Activity) {
+        resizeSelectedImages(newList, false, activity)
 
     }
 

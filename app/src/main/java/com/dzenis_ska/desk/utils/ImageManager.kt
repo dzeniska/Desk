@@ -8,10 +8,10 @@ import android.util.Log
 import android.widget.ImageView
 import androidx.core.net.toUri
 import androidx.exifinterface.media.ExifInterface
+import com.dzenis_ska.desk.adapters.ImageAdapter
+import com.dzenis_ska.desk.model.Ad
 import com.squareup.picasso.Picasso
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.io.File
 import java.io.InputStream
 
@@ -21,13 +21,13 @@ object ImageManager {
     private const val WIDTH = 0
     private const val HEIGHT = 1
 
-    suspend fun getImageSize(uri: Uri, act: Activity): List<Int> = withContext(Dispatchers.IO) {
+    fun getImageSize(uri: Uri, act: Activity): List<Int> {
         val inStream = act.contentResolver.openInputStream(uri)
         val options = BitmapFactory.Options().apply {
             inJustDecodeBounds = true
         }
         BitmapFactory.decodeStream(inStream, null, options)
-        return@withContext listOf(options.outWidth, options.outHeight)
+        return listOf(options.outWidth, options.outHeight)
     }
 
     fun chooseScaleType(im: ImageView, bitMap: Bitmap){
@@ -69,5 +69,27 @@ object ImageManager {
 //            Log.d("!!!", "$e")
         }
         return@withContext bitmapList
+    }
+
+    private suspend fun getBitmapFromUris(uris: List<String?>): List<Bitmap> = withContext(Dispatchers.IO) {
+        val bitmapList = ArrayList<Bitmap>()
+        for (i in uris.indices) {
+            val e = kotlin.runCatching {
+                bitmapList.add(
+                    Picasso.get()
+                        .load(uris[i])
+                        .get()
+                )
+            }
+            Log.d("!!!", "$e")
+        }
+        return@withContext bitmapList
+    }
+    fun fillImageArray(ad: Ad, adapter: ImageAdapter){
+        val listUris = listOf(ad.mainImage, ad.image2, ad.image3)
+        CoroutineScope(Dispatchers.Main).launch {
+            val bitmapList = getBitmapFromUris(listUris)
+            adapter.update(bitmapList as ArrayList<Bitmap>)
+        }
     }
 }

@@ -1,14 +1,12 @@
 package com.dzenis_ska.desk.act
 
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
+import androidx.viewpager2.widget.ViewPager2
 import com.dzenis_ska.desk.MainActivity
 import com.dzenis_ska.desk.frag.FragmentCloseInterface
 import com.dzenis_ska.desk.R
@@ -19,28 +17,33 @@ import com.dzenis_ska.desk.databinding.ActivityEditAdsBinding
 import com.dzenis_ska.desk.dialogs.DialogSpinnerHelper
 import com.dzenis_ska.desk.frag.ImageListFrag
 import com.dzenis_ska.desk.utils.CityesHelper
+import com.dzenis_ska.desk.utils.ImageManager
 import com.dzenis_ska.desk.utils.ImagePicker
+import com.google.android.gms.tasks.OnCompleteListener
+import java.io.ByteArrayOutputStream
 
 
 class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     var chooseImageFrag: ImageListFrag? = null
-    lateinit var rootElement: ActivityEditAdsBinding
+    lateinit var binding: ActivityEditAdsBinding
     private val dialog = DialogSpinnerHelper()
     lateinit var imageAdapter: ImageAdapter
     private val dbManager = DbManager()
 
 
     var editImagePos = 0
+    private var imageIndex = 0
     private var isEditState = false
     private var ad:Ad? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        rootElement = ActivityEditAdsBinding.inflate(layoutInflater)
-        val view = rootElement.root
+        binding = ActivityEditAdsBinding.inflate(layoutInflater)
+        val view = binding.root
         setContentView(view)
         init()
         checkEditState()
+        imageChangeCounter()
     }
     private fun checkEditState(){
         isEditState = isEditState()
@@ -54,7 +57,7 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
         return intent.getBooleanExtra(MainActivity.EDIT_STATE, false)
     }
 
-    private fun fillViews(ad: Ad) = with(rootElement){
+    private fun fillViews(ad: Ad) = with(binding){
         tvCountry.text = ad.country
         tvCity.text = ad.city
         editTel.setText(ad.tel)
@@ -64,36 +67,30 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
         edTitle.setText(ad.title)
         edPrice.setText(ad.price)
         edDescription.setText(ad.description)
-
+        ImageManager.fillImageArray(ad, imageAdapter)
     }
 
 
     private fun init() {
         imageAdapter = ImageAdapter()
-        rootElement.vpImages.adapter = imageAdapter
+        binding.vpImages.adapter = imageAdapter
     }
 
-
-
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//        ImagePicker.showSelectedImages(resultCode, requestCode, data, this)
-//    }
 
     //OnClicks
     fun onClickSelectCountry(view: View) {
         val listCountry = CityesHelper.getAllCountryes(this)
-        dialog.showSpinnerDialog(this, listCountry, rootElement.tvCountry)
-        if (rootElement.tvCity.text.toString() != getString(R.string.select_town)) {
-            rootElement.tvCity.text = getString(R.string.select_town)
+        dialog.showSpinnerDialog(this, listCountry, binding.tvCountry)
+        if (binding.tvCity.text.toString() != getString(R.string.select_town)) {
+            binding.tvCity.text = getString(R.string.select_town)
         }
     }
 
     fun onClickSelectCity(view: View) {
-        val selectedCountry = rootElement.tvCountry.text.toString()
+        val selectedCountry = binding.tvCountry.text.toString()
         if (selectedCountry != getString(R.string.select_country)) {
             val listCity = CityesHelper.getAllCityes(selectedCountry, this)
-            dialog.showSpinnerDialog(this, listCity, rootElement.tvCity)
+            dialog.showSpinnerDialog(this, listCity, binding.tvCity)
         } else {
             Toast.makeText(this, R.string.no_selected_country, Toast.LENGTH_LONG).show()
         }
@@ -101,12 +98,12 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
 
     fun onClickSelectCat(view: View) {
         val listCat = resources.getStringArray(R.array.category).toMutableList() as ArrayList
-        dialog.showSpinnerDialog(this, listCat, rootElement.tvCat)
+        dialog.showSpinnerDialog(this, listCat, binding.tvCat)
     }
 
     fun onClickGetImages(view: View) {
         if (imageAdapter.mainArray.size == 0) {
-            ImagePicker.launcher(this, 3)
+            ImagePicker.getMultiImages(this, 3)
         } else {
             openChooseImageFragment(null)
             chooseImageFrag?.updateAdapterFromEdit(imageAdapter.mainArray)
@@ -114,12 +111,14 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
     }
 
     fun onClickPublish(view: View) {
-        val adTemp = fillAd()
+        ad = fillAd()
         if(isEditState) {
-            dbManager.publishAd(adTemp.copy(key = ad?.key), onPublishFinish())
+            ad?.copy(key = ad?.key)?.let { dbManager.publishAd(it, onPublishFinish()) }
         }else{
-            dbManager.publishAd(adTemp, onPublishFinish())
+//            dbManager.publishAd(adTemp, onPublishFinish())
+            uploadImages()
         }
+
 
     }
     private fun onPublishFinish(): DbManager.FinishWorkListener{
@@ -132,7 +131,7 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
 
     private fun fillAd(): Ad {
         val ad: Ad
-        rootElement.apply {
+        binding.apply {
             ad = Ad(
                 tvCountry.text.toString(),
                 tvCity.text.toString(),
@@ -143,9 +142,14 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
                 edTitle.text.toString(),
                 edPrice.text.toString(),
                 edDescription.text.toString(),
+                editEmail.text.toString(),
+                "empty",
+                "empty",
+                "empty",
                 dbManager.db.push().key,
                 "0",
-                dbManager.auth.uid
+                dbManager.auth.uid,
+                System.currentTimeMillis().toString()
             )
         }
         return ad
@@ -153,15 +157,63 @@ class EditAdsAct : AppCompatActivity(), FragmentCloseInterface {
 
     override fun onFragClose(list: ArrayList<Bitmap>) {
         chooseImageFrag = null
-        rootElement.scrollViewMain.visibility = View.VISIBLE
+        binding.scrollViewMain.visibility = View.VISIBLE
         imageAdapter.update(list)
     }
 
     fun openChooseImageFragment(returnValues: ArrayList<Uri>?) {
-        chooseImageFrag = ImageListFrag(this, returnValues)
-        rootElement.scrollViewMain.visibility = View.GONE
+        chooseImageFrag = ImageListFrag(this)
+        if (returnValues != null) chooseImageFrag?.resizeSelectedImages(returnValues, true, this)
+        binding.scrollViewMain.visibility = View.GONE
         val fm = supportFragmentManager.beginTransaction()
         fm.replace(R.id.place_holder, chooseImageFrag!!)
         fm.commit()
+    }
+    private fun uploadImages() {
+        if(imageAdapter.mainArray.size == imageIndex){
+            dbManager.publishAd(ad!!, onPublishFinish())
+            return
+        }
+        val byteArray = prepareImageBiteArray(imageAdapter.mainArray[imageIndex])
+        uploadImage(byteArray){
+            dbManager.publishAd(ad!!, onPublishFinish())
+            nextImage(it.result.toString())
+        }
+    }
+    private fun nextImage(uri: String) {
+        setImageUriToAd(uri)
+        imageIndex++
+        uploadImages()
+    }
+    private fun setImageUriToAd(uri: String){
+        when (imageIndex){
+            0 -> ad = ad?.copy(mainImage = uri)
+            1 -> ad = ad?.copy(image2 = uri)
+            2 -> ad = ad?.copy(image3 = uri)
+        }
+    }
+    private fun prepareImageBiteArray(bitMap: Bitmap): ByteArray{
+        val outStream = ByteArrayOutputStream()
+        bitMap.compress(Bitmap.CompressFormat.JPEG, 25, outStream)
+        return outStream.toByteArray()
+    }
+    private fun uploadImage(byteArray: ByteArray, listener: OnCompleteListener<Uri>){
+        val imStorageRef = dbManager.dbStorage
+            .child(dbManager.auth.uid!!)
+            .child("image_${System.currentTimeMillis()}")
+
+        val upTask = imStorageRef.putBytes(byteArray)
+        upTask.continueWithTask{task->
+            imStorageRef.downloadUrl
+        }.addOnCompleteListener(listener)
+    }
+    private fun imageChangeCounter(){
+        binding.vpImages.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback(){
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                val imageCounter = "${position + 1}/${binding.vpImages.adapter?.itemCount}"
+                binding.tvImageCounter.text = imageCounter
+            }
+        })
     }
 }

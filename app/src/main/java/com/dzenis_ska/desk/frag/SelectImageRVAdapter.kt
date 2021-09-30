@@ -4,11 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.dzenis_ska.desk.R
 import com.dzenis_ska.desk.act.EditAdsAct
@@ -57,7 +53,7 @@ class   SelectImageRVAdapter(val adapterCallBack: AdapterCallBack) : RecyclerVie
                     adapter.adapterCallBack.onItemDelete()
                 }
                 imEditImage.setOnClickListener(){
-                    ImagePicker.launcher(context as EditAdsAct, 1)
+                    ImagePicker.getSingleImage(context as EditAdsAct)
                     context.editImagePos = adapterPosition
                 }
                 tvTitle.text = context.resources.getStringArray(R.array.title_array)[adapterPosition]
