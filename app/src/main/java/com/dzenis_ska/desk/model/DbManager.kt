@@ -1,12 +1,9 @@
 package com.dzenis_ska.desk.model
 
 
-import android.content.Context
 import android.util.Log
-import android.widget.Toast
-import com.dzenis_ska.desk.MainActivity
+import com.dzenis_ska.desk.utils.FilterManager
 
-import com.dzenis_ska.desk.viewmodel.FirebaseViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -15,7 +12,6 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import kotlin.coroutines.coroutineContext
 
 class DbManager {
 
@@ -23,13 +19,22 @@ class DbManager {
     val dbStorage = Firebase.storage.getReference(MAIN_NODE)
     val auth = Firebase.auth
 
-    fun publishAd(ad: Ad, finishListener: FinishWorkListener){
-        if(auth.uid != null){
-            db.child(ad.key ?: "empty").child(auth.uid!!).child(AD_NODE).setValue(ad
-            ).addOnCompleteListener{task->
-                if(task.isSuccessful) finishListener.onFinish()
+    fun publishAd(ad: Ad, finishListener: FinishWorkListener) {
+        if (auth.uid != null) {
+            db.child(ad.key ?: "empty")
+                .child(auth.uid!!)
+                .child(AD_NODE)
+                .setValue(ad)
+                .addOnCompleteListener { taskAd ->
+                    val adFilter = FilterManager.createFilter(ad)
+                    db.child(ad.key ?: "empty")
+                        .child(FILTER_NODE)
+                        .setValue(adFilter)
+                        .addOnCompleteListener { taskNODE ->
+                            if (taskNODE.isSuccessful) finishListener.onFinish()
 //                Toast.makeText( Context, "sdaf", Toast.LENGTH_SHORT).show()
-            }
+                        }
+                }
         }
     }
     fun adViewed(ad: Ad, listener: FinishWorkListener) {
@@ -45,6 +50,7 @@ class DbManager {
     }
 
     fun onFavClick(ad: Ad, listener: FinishWorkListener){
+
         if(ad.isFav){
             removeFromFavs(ad,listener)
         } else {
@@ -82,9 +88,26 @@ class DbManager {
         readDataFromDb(query, readDataCallback)
     }
 
-    fun getAllAds(lastTime: String, readDataCallback: ReadDataCallback?){
-        val query = db.orderByChild(auth.uid + "/ad/time")
-            .startAfter(lastTime).limitToFirst(ADS_LIMIT)
+    fun getAllAdsFirstPage(readDataCallback: ReadDataCallback?){
+        val query = db.orderByChild("/adFilter/time")
+                        .limitToLast(ADS_LIMIT)
+        readDataFromDb(query, readDataCallback)
+    }
+    fun getAllAdsNextPage(time: String, readDataCallback: ReadDataCallback?){
+        val query = db.orderByChild("/adFilter/time")
+            .endBefore(time)
+            .limitToLast(ADS_LIMIT)
+        readDataFromDb(query, readDataCallback)
+    }
+    fun getAllAdsFromCatFirstPage(cat: String, readDataCallback: ReadDataCallback?){
+        val query = db.orderByChild("/adFilter/cat_time")
+            .startAt(cat).endAt(cat + "_\uf8ff").limitToLast(ADS_LIMIT)
+        readDataFromDb(query, readDataCallback)
+    }
+
+    fun getAllAdsFromCatNextPage(catTime: String, readDataCallback: ReadDataCallback?){
+        val query = db.orderByChild("/adFilter/cat_time")
+            .endBefore(catTime).limitToLast(ADS_LIMIT)
         readDataFromDb(query, readDataCallback)
     }
 
@@ -135,6 +158,9 @@ class DbManager {
     }
     companion object{
         const val AD_NODE = "ad"
+        const val FILTER_NODE = "adFilter"
+        const val AD_FILTER_TIME = "/adFilter/time"
+        const val AD_FILTER_CAT_TIME = "/adFilter/catTime"
         const val INFO_NODE = "info"
         const val MAIN_NODE = "main"
         const val FAVS_NODE = "favs"

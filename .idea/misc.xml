@@ -3,13 +3,16 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/allles/Desk/app/src/main/res/drawable/ic_filter.xml" value="0.1234375" />
         <entry key="..\:/allles/Desk/app/src/main/res/layout/activity_description.xml" value="0.25" />
         <entry key="..\:/allles/Desk/app/src/main/res/layout/activity_edit_ads.xml" value="0.25" />
+        <entry key="..\:/allles/Desk/app/src/main/res/layout/activity_filter.xml" value="0.20416666666666666" />
         <entry key="..\:/allles/Desk/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/allles/Desk/app/src/main/res/layout/ad_list_item.xml" value="0.19814814814814816" />
         <entry key="..\:/allles/Desk/app/src/main/res/layout/main_content.xml" value="0.1" />
         <entry key="..\:/allles/Desk/app/src/main/res/layout/nav_header_main.xml" value="0.20416666666666666" />
         <entry key="..\:/allles/Desk/app/src/main/res/menu/drawer_main_menu.xml" value="0.1" />
+        <entry key="..\:/allles/Desk/app/src/main/res/menu/main_menu.xml" value="0.1" />
       </map>
     </option>
   </component>
