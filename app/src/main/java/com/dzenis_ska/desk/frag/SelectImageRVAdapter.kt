@@ -14,7 +14,8 @@ import com.dzenis_ska.desk.utils.ImageManager
 import com.dzenis_ska.desk.utils.ImagePicker
 import com.dzenis_ska.desk.utils.ItemTouchMoveCallback
 
-class   SelectImageRVAdapter(val adapterCallBack: AdapterCallBack) : RecyclerView.Adapter<SelectImageRVAdapter.ImageHolder>(), ItemTouchMoveCallback.ItemTouchAdapter {
+class   SelectImageRVAdapter(val adapterCallBack: AdapterCallBack)
+    : RecyclerView.Adapter<SelectImageRVAdapter.ImageHolder>(), ItemTouchMoveCallback.ItemTouchAdapter {
     val mainArray = ArrayList<Bitmap>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageHolder {
@@ -41,7 +42,8 @@ class   SelectImageRVAdapter(val adapterCallBack: AdapterCallBack) : RecyclerVie
         holder.setData(mainArray[position])
     }
 
-    class ImageHolder(private val viewBinding: SelectImageFragItemBinding, val context: Context, val adapter: SelectImageRVAdapter): RecyclerView.ViewHolder(viewBinding.root) {
+    class ImageHolder(private val viewBinding: SelectImageFragItemBinding, val context: Context, val adapter: SelectImageRVAdapter)
+        : RecyclerView.ViewHolder(viewBinding.root) {
 
         fun setData(bitMap: Bitmap){
 
@@ -70,6 +72,4 @@ class   SelectImageRVAdapter(val adapterCallBack: AdapterCallBack) : RecyclerVie
         Log.d("!!!!", "$newList")
         notifyDataSetChanged()
     }
-
-
 }
