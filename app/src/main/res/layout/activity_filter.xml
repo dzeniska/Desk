@@ -162,9 +162,20 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
                 android:layout_marginEnd="6dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginTop="6dp"
                 android:backgroundTint="@color/white"
                 android:text="применить фильтр"
+                android:textColor="@color/gren_main" />
+
+            <Button
+                android:id="@+id/btClear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="@color/white"
+                android:text="очистить фильтр"
                 android:textColor="@color/gren_main" />
 
         </LinearLayout>

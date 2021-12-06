@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "902360269968-361f6mth4udq0v0j5p1anindrv28jdg3.apps.googleusercontent.com",
+          "client_id": "902360269968-6dg1nmb2n4pmm1tvq2d6cavshmvuu689.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.dzenis_ska.desk",
-            "certificate_hash": "c75fc54a22a45821a5bb77438a027e0dd0e8320b"
+            "certificate_hash": "b1b00e745926a13f3e3d86e256ae35091c115a58"
           }
         },
         {

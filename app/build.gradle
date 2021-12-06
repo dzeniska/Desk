@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId "com.dzenis_ska.desk"
-        minSdkVersion 29
+        minSdkVersion 25
         targetSdkVersion 30
         versionCode 1
 
@@ -51,7 +51,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.firebase:firebase-database-ktx'
     implementation 'com.google.firebase:firebase-storage-ktx'
-    implementation 'com.google.android.gms:play-services-auth:19.0.0'
+    implementation 'com.google.android.gms:play-services-auth:19.2.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3'
     implementation 'com.google.android.gms:play-services-ads:20.2.0'

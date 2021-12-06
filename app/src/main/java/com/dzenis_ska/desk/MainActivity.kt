@@ -29,6 +29,7 @@ import com.dzenis_ska.desk.databinding.ActivityMainBinding
 import com.dzenis_ska.desk.dialoghelper.DialogConst
 import com.dzenis_ska.desk.dialoghelper.DialogHelper
 import com.dzenis_ska.desk.model.Ad
+import com.dzenis_ska.desk.utils.FilterManager
 import com.dzenis_ska.desk.viewmodel.FirebaseViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
@@ -52,6 +53,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var clearUpdate: Boolean = true
     private var currentCategory: String? = null
     private var filter: String = "empty"
+    private var filterDb: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,6 +108,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if(it.resultCode == RESULT_OK){
                 filter = it.data?.getStringExtra(FilterActivity.FILTER_KEY)!!
                 Log.d("!!!MyLog", "Filter: ${filter}")
+                Log.d("!!!MyLog", "GetFilter: ${FilterManager.getFilter(filter)}")
+                filterDb = FilterManager.getFilter(filter)
+            } else if(it.resultCode == RESULT_CANCELED){
+                filterDb = ""
+                filter = "empty"
             }
         }
     }
@@ -175,7 +182,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
                 R.id.id_home ->{
                     currentCategory = getString(R.string.def)
-                    fireBaseViewModel.loadAllAdsFirstPage()
+                    fireBaseViewModel.loadAllAdsFirstPage(filterDb)
                     toolbar.title = getString(R.string.def)
                 }
             }
@@ -233,11 +240,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun getAdsFromCat(cat: String){
         currentCategory = cat
-        fireBaseViewModel.loadAllAdsFromCat(cat)
+        fireBaseViewModel.loadAllAdsFromCat(cat, filterDb)
+//        Log.d("!!!user", "$cat $filterDb")
     }
 
     fun uiUpdate(user: FirebaseUser?) {
-        Log.d("!!!", user.toString())
+        user?.email?.let { Log.d("!!!user", it) }
         if (user == null) {
 //            resources.getString(R.string.not_reg)
             dialogHelper.accHelper.signInAnonimously(object : AccountHelper.Listener{

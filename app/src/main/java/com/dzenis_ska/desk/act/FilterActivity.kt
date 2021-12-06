@@ -24,6 +24,7 @@ class FilterActivity : AppCompatActivity() {
         onClickSelectCountry()
         onClickSelectCity()
         onClickDone()
+        onClickClear()
         getFilter()
     }
 
@@ -35,8 +36,8 @@ class FilterActivity : AppCompatActivity() {
         val filter = intent.getStringExtra(FILTER_KEY)
         if(filter != null &&filter != "empty"){
             val filterArray = filter.split("_")
-            if(filterArray[0] != getString(R.string.select_country)) tvCountry.text = filterArray[0]
-            if(filterArray[1] != getString(R.string.select_town)) tvCity.text = filterArray[1]
+            if(filterArray[0] != "empty") tvCountry.text = filterArray[0]
+            if(filterArray[1] != "empty") tvCity.text = filterArray[1]
             if(filterArray[2] != "empty") edIndex.setText(filterArray[2])
             checkBoxWithSend.isChecked = filterArray[3].toBoolean()
         }
@@ -59,6 +60,16 @@ class FilterActivity : AppCompatActivity() {
           }
             setResult(RESULT_OK, i)
             finish()
+        }
+    }
+
+    private fun onClickClear() = with(binding){
+        btClear.setOnClickListener {
+           tvCountry.text = getString(R.string.select_country)
+           tvCity.text = getString(R.string.select_town)
+            edIndex.setText("")
+            checkBoxWithSend.isChecked = false
+            setResult(RESULT_CANCELED)
         }
     }
 
