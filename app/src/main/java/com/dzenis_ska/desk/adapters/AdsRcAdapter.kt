@@ -21,7 +21,9 @@ class AdsRcAdapter(val act: MainActivity) : RecyclerView.Adapter<AdsRcAdapter.Ad
     val adArray = ArrayList<Ad>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AdHolder {
-        val binding = AdListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = AdListItemBinding
+            .inflate(LayoutInflater
+                .from(parent.context), parent, false)
         return AdHolder(binding, act)
     }
 

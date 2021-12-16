@@ -96,7 +96,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:background="@color/yellow"
-                    android:fontFamily="cursive"
+
                     android:gravity="center_horizontal"
                     android:paddingStart="16dp"
                     android:paddingTop="8dp"

@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId "com.dzenis_ska.desk"
-        minSdkVersion 25
+        minSdkVersion 23
         targetSdkVersion 30
         versionCode 1
 
