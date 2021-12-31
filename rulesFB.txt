@@ -1,0 +1,33 @@
+{
+  "rules": {
+    "main":{
+      ".read": "auth != null",
+        "$key":{
+
+            "$uid":{
+              ".write": "auth.uid == $uid"
+            },
+              "adFilter":{
+                 ".write": "auth != null"
+              },
+               "info":{
+                  ".write": "auth != null"
+               }
+        }
+    },
+
+  }
+}
+
+{
+
+  "rules": {
+
+    "main":{
+        ".read": "auth != null",
+        ".write": "auth != null"
+    }
+
+  }
+
+}

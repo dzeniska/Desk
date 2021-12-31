@@ -1,5 +1,6 @@
 package com.dzenis_ska.desk
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.SpannableString
@@ -31,6 +32,8 @@ import com.dzenis_ska.desk.dialoghelper.DialogHelper
 import com.dzenis_ska.desk.model.Ad
 import com.dzenis_ska.desk.utils.FilterManager
 import com.dzenis_ska.desk.viewmodel.FirebaseViewModel
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.navigation.NavigationView
@@ -59,9 +62,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
-
         setContentView(view)
+        (applicacation as AppMainState)
         init()
+        initAds()
         onActivityResult()
         navViewSettings()
         initRecyclerView()
@@ -107,8 +111,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .StartActivityForResult()) {
             if(it.resultCode == RESULT_OK){
                 filter = it.data?.getStringExtra(FilterActivity.FILTER_KEY)!!
-                Log.d("!!!MyLog", "Filter: ${filter}")
-                Log.d("!!!MyLog", "GetFilter: ${FilterManager.getFilter(filter)}")
                 filterDb = FilterManager.getFilter(filter)
             } else if(it.resultCode == RESULT_CANCELED){
                 filterDb = ""
@@ -123,10 +125,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 //                    animation = AnimationUtils.loadAnimation(context, R.anim.alpha)
             if(!clearUpdate) {
-                Log.d("!!!updateAdapter", "update")
                 adapter.updateAdapter(list)
             }else{
-                Log.d("!!!updateAdapter", "updateWithClear")
                 adapter.updateAdapterWithClear(list)
             }
             binding.mainContent.tvEmpty.visibility = if(adapter.itemCount == 0) View.VISIBLE else View.GONE
@@ -241,11 +241,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun getAdsFromCat(cat: String){
         currentCategory = cat
         fireBaseViewModel.loadAllAdsFromCat(cat, filterDb)
-//        Log.d("!!!user", "$cat $filterDb")
     }
 
     fun uiUpdate(user: FirebaseUser?) {
-        user?.email?.let { Log.d("!!!user", it) }
+        user?.email?.let {  }
         if (user == null) {
 //            resources.getString(R.string.not_reg)
             dialogHelper.accHelper.signInAnonimously(object : AccountHelper.Listener{
@@ -265,13 +264,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onStart() {
         super.onStart()
-        Log.d("!!!", "onStart")
         uiUpdate(mAuth.currentUser)
     }
 
     override fun onResume() {
         super.onResume()
+        binding.mainContent.adView2.resume()
         binding.mainContent.bNavView.selectedItemId = R.id.id_home
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.mainContent.adView2.pause()
+    }
+
+    private fun initAds(){
+        MobileAds.initialize(this)
+        val adRequest = AdRequest.Builder().build()
+        binding.mainContent.adView2.loadAd(adRequest)
     }
 
     override fun onDeleteItem(ad: Ad) {
@@ -306,11 +316,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         rcView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-//                Log.d("!!!scrollState", "${newState}")
                 if(!recyclerView.canScrollVertically(SCROLL_DOWN)
                     && newState == RecyclerView.SCROLL_STATE_IDLE){
                         clearUpdate = false
-//                    Log.d("!!!scroll", "${newState}")
                     val adsList = fireBaseViewModel.liveAdsData.value!!
                     if(adsList.isNotEmpty()) {
                         getAdsFromCatS(adsList)
@@ -321,13 +329,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
     private fun getAdsFromCatS(adsList: ArrayList<Ad>) {
         adsList[0].let {
+
             if (currentCategory == getString(R.string.def)) {
                 fireBaseViewModel.loadAllAdsNextPage(it.time, filterDb)
             } else {
-                val catTime = "${it.category}_${it.time}"
-                fireBaseViewModel.loadAllAdsFromCatNextPage(catTime)
+                fireBaseViewModel.loadAllAdsFromCatNextPage(it.category!!, it.time, filterDb)
             }
         }
+    }
+
+    override fun onDestroy() {
+        binding.mainContent.adView2.destroy()
+        super.onDestroy()
     }
 
     companion object {

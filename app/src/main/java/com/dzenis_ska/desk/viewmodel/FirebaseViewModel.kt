@@ -12,6 +12,7 @@ class FirebaseViewModel: ViewModel() {
     val liveAdsData = MutableLiveData<ArrayList<Ad>>()
 
     fun loadAllAdsFirstPage(filter: String){
+        Log.d("!!!filter", "$filter")
         dbManager.getAllAdsFirstPage(filter, object: DbManager.ReadDataCallback{
             override fun readData(list: ArrayList<Ad>) {
                 liveAdsData.value = list
@@ -32,8 +33,8 @@ class FirebaseViewModel: ViewModel() {
             }
         })
     }
-    fun loadAllAdsFromCatNextPage(catTime: String){
-        dbManager.getAllAdsFromCatNextPage(catTime, object: DbManager.ReadDataCallback{
+    fun loadAllAdsFromCatNextPage(cat: String, time: String, filter: String){
+        dbManager.getAllAdsFromCatNextPage(cat, time, filter, object: DbManager.ReadDataCallback{
             override fun readData(list: ArrayList<Ad>) {
                 liveAdsData.value = list
             }
@@ -41,10 +42,8 @@ class FirebaseViewModel: ViewModel() {
     }
 
     fun onFavClick(ad: Ad){
-        Log.d("!!!favClick", "${ad.isFav}")
         dbManager.onFavClick(ad, object : DbManager.FinishWorkListener{
             override fun onFinish() {
-                Log.d("!!!favClick", "${ad.isFav}")
                 val updatedList = liveAdsData.value
                 val pos = updatedList?.indexOf(ad)
                 if(pos != -1) {
