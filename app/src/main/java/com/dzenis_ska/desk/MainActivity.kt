@@ -63,7 +63,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        (applicacation as AppMainState)
+        (applicacation as AppMainState).showAdIfAvailable(this){
+
+        }
         init()
         initAds()
         onActivityResult()
