@@ -35,6 +35,7 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface) : Ba
     private var addImageItem: MenuItem? = null
     lateinit var binding: ListImageFragBinding
 
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = ListImageFragBinding.inflate(layoutInflater)
         adView = binding.adView
@@ -51,6 +52,7 @@ class ImageListFrag(private val fragCloseInterface: FragmentCloseInterface) : Ba
             rcViewSelectImage.layoutManager = LinearLayoutManager(activity)
             rcViewSelectImage.adapter = adapter
         }
+
     }
 
     override fun onItemDelete() {

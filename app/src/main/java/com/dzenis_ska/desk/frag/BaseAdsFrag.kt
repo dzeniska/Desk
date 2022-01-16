@@ -1,10 +1,13 @@
 package com.dzenis_ska.desk.frag
 
 import android.app.Activity
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.dzenis_ska.desk.R
+import com.dzenis_ska.desk.utils.BillingManager
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
@@ -12,16 +15,24 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 open class BaseAdsFrag: Fragment(), InterAdsClose {
     lateinit var adView: AdView
     var interAd: InterstitialAd? = null
+    private var pref: SharedPreferences? = null
+    private var isPremiumUser = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initAds()
+        pref = activity?.getSharedPreferences(BillingManager.MAIN_PREF, AppCompatActivity.MODE_PRIVATE)
+        isPremiumUser = pref?.getBoolean(BillingManager.REMOVE_ADS_PREF, false)!!
+        isPremiumUser = true
+        if(!isPremiumUser){
+            initAds()
+            loadInterAd()
+        } else {
+            adView.visibility = View.GONE
+        }
+
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        loadInterAd()
-    }
+
 
     override fun onResume() {
         super.onResume()

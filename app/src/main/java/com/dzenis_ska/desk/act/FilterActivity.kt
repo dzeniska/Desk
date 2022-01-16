@@ -70,6 +70,8 @@ class FilterActivity : AppCompatActivity() {
             edIndex.setText("")
             checkBoxWithSend.isChecked = false
             setResult(RESULT_CANCELED)
+            //todo
+            finish()
         }
     }
 

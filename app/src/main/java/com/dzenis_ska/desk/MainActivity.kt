@@ -2,6 +2,7 @@ package com.dzenis_ska.desk
 
 import android.app.Activity
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
@@ -30,6 +31,8 @@ import com.dzenis_ska.desk.databinding.ActivityMainBinding
 import com.dzenis_ska.desk.dialoghelper.DialogConst
 import com.dzenis_ska.desk.dialoghelper.DialogHelper
 import com.dzenis_ska.desk.model.Ad
+import com.dzenis_ska.desk.utils.AppMainState
+import com.dzenis_ska.desk.utils.BillingManager
 import com.dzenis_ska.desk.utils.FilterManager
 import com.dzenis_ska.desk.viewmodel.FirebaseViewModel
 import com.google.android.gms.ads.AdRequest
@@ -57,22 +60,33 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var currentCategory: String? = null
     private var filter: String = "empty"
     private var filterDb: String = ""
+    private var pref: SharedPreferences? = null
+    private var isPremiumUser = false
+    private var bManager: BillingManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        (applicacation as AppMainState).showAdIfAvailable(this){
-
+        pref = getSharedPreferences(BillingManager.MAIN_PREF, MODE_PRIVATE)
+        isPremiumUser = pref?.getBoolean(BillingManager.REMOVE_ADS_PREF, false)!!
+        isPremiumUser = true
+        if(!isPremiumUser){
+                (application as AppMainState).showAdIfAvailable(this){
+                Toast.makeText(this@MainActivity, "yobanaya reklama", Toast.LENGTH_SHORT).show()
+            }
+            initAds()
+        } else {
+            binding.mainContent.adView2.visibility = View.GONE
         }
+
         init()
-        initAds()
+
         onActivityResult()
         navViewSettings()
         initRecyclerView()
         initViewModel()
-//        fireBaseViewModel.loadAllAds("0")
         bottomMenuOnClick()
         scrollListener()
         onActivityResultFilter()
@@ -218,6 +232,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.id_my_dm -> {
                 getAdsFromCat(getString(R.string.add_my_dm))
             }
+            R.id.id_remove_ads -> {
+                bManager = BillingManager(this)
+                bManager?.startConnection()
+            }
             R.id.id_sign_up -> {
                 dialogHelper.createSignDialog(DialogConst.SIGN_UP_STATE)
                 //Toast.makeText(this, "id_sign_up", Toast.LENGTH_SHORT ).show()
@@ -342,6 +360,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onDestroy() {
         binding.mainContent.adView2.destroy()
+        bManager?.closeConnection()
         super.onDestroy()
     }
 

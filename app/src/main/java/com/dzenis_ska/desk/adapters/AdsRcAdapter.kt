@@ -66,13 +66,13 @@ class AdsRcAdapter(val act: MainActivity) : RecyclerView.Adapter<AdsRcAdapter.Ad
 
 
         fun setData(ad: Ad) = with(binding) {
-//            tvTitle.text = ad.title
-//            tvDescription.text = ad.description
-//            tvPrice.text = ad.price
-//            tvViewCounter.text = ad.viewsCounter
-//            tvFavCounter.text = ad.favCounter
-//            val publishTime = "Опубликованно: ${getTimeFromMillis(ad.time)}"
-//            tvPublishTime.text = publishTime
+            tvTitle.text = ad.title
+            tvDescription.text = ad.description
+            tvPrice.text = ad.price
+            tvViewCounter.text = ad.viewsCounter
+            tvFavCounter.text = ad.favCounter
+            val publishTime = "Опубликованно: ${getTimeFromMillis(ad.time)}"
+            tvPublishTime.text = publishTime
             Picasso.get().load(ad.mainImage).into(mainImage)
 
             isFav(ad)

@@ -39,6 +39,10 @@
             android:id="@+id/accCat">
             <menu>
                 <group android:checkableBehavior="single">
+                    <item
+                        android:id="@+id/id_remove_ads"
+                        android:title="@string/remove_ads">
+                    </item>
                 <item
                     android:id="@+id/id_sign_up"
                     android:title="@string/ac_sign_up">

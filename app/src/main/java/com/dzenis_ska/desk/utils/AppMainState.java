@@ -263,9 +263,3 @@ public class AppMainState extends Application implements Application.ActivityLif
         }
     }
 }
-
-
-//    def lifecycle_version = "2.2.0"
-//    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
-//    implementation "androidx.lifecycle:lifecycle-runtime:$lifecycle_version"
-//    annotationProcessor "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
